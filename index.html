@@ -8,7 +8,7 @@
     body { background-color: #000814; color: #d1ffe2; font-family: Arial, sans-serif; text-align: center; padding: 2em; }
     button { padding: 10px 20px; background-color: #21f3b5; color: #000814; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
     .section { margin: 2em auto; padding: 1.5em; background-color: #010b1a; border-radius: 15px; max-width: 600px; }
-    iframe { width: 100%; height: 300px; border: none; border-radius: 12px; }
+    iframe { width: 100%; height: 300px; border: none; border-radius: 12px; background: #0a0a0a; }
   </style>
 </head>
 <body>
@@ -71,4 +71,17 @@
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       await provider.send("eth_requestAccounts", []);
       const signer = provider.getSigner();
-      const
+      const userAddress = await signer.getAddress();
+
+      const gaia = new ethers.Contract(GAIA_ADDRESS, [
+        "function transfer(address to, uint amount) public returns (bool)"
+      ], signer);
+
+      const tx = await gaia.transfer(userAddress, ethers.utils.parseEther("10"));
+      document.getElementById("faucet-status").innerText = "Sending transaction...";
+      await tx.wait();
+      document.getElementById("faucet-status").innerText = "✅ 10 GAIA tokens sent!";
+    }
+  </script>
+</body>
+</html>
